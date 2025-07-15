@@ -1,27 +1,47 @@
 import flet as ft 
+from datetime import datetime
 
 def main(page: ft.Page):
     # page.add(ft.Text("Hello world"))
     page.title = 'Мое первое приложение на Flet'
+    page.theme_mode = ft.ThemeMode.LIGHT
 
     greeting_text = ft.Text("Привет, мир!")
 
-    name_input = ft.TextField(label="Введите имя:")
+    greeting_history = []
+    history_text = ft.Text("История приветствий:")
 
     def on_button_click(_):
         name = name_input.value.strip()
 
         if name:
             greeting_text.value = f"Привет, {name}!"
+            greet_button.text = "Отправить еще раз"
+            name_input.value = ""
+            
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            greeting_history.append(f'{timestamp} - {name}')
+            history_text.value = "История приветствий:\n" + "\n".join(greeting_history)
         else:
             greeting_text.value = "Пожалуйте, введите имя!" 
         
-        print(greeting_text.value)
+        # print(greeting_text.value)
+        page.update()
+    
+    def clear_history(_):
+        print("Test")
+        greeting_history.clear()
+        print(f"История приветствий очищена. {greeting_history}")
+        history_text.value = "История приветствий:"
         page.update()
 
-    greet_button = ft.ElevatedButton("Отправить", on_click=on_button_click)
+    clear_button = ft.IconButton(icon_color=ft.Colors.GREEN, icon=ft.Icons.DELETE_FOREVER, tooltip="Очистить историю", on_click=clear_history)
 
-    page.add(greeting_text, name_input, greet_button)
+    name_input = ft.TextField(label="Атынарды жазгыла:✍🏻", on_submit=on_button_click)
+    greet_button = ft.ElevatedButton("Отправить", on_click=on_button_click, icon=ft.Icons.SEND)
+    greet_button_1 = ft.TextButton("Отправить", on_click=on_button_click, icon=ft.Icons.SEND)
+
+    page.add(greeting_text, name_input, greet_button, greet_button_1, clear_button, history_text)
 
 
-ft.app(target=main)
+ft.app(target=main, view=ft.WEB_BROWSER)
